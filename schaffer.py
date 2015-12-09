@@ -1,18 +1,14 @@
 # $Id: pyevolve_ex3_schaffer.py 150 2009-01-18 19:29:13Z christian.perone $
-import sys
 
 import numpy as np
 from pyevolve import G1DList, GSimpleGA
 from pyevolve import Initializators, Consts
 # import matplotlib.pyplot as plt
-import math
 # This is the Schaffer F6 Function, a deceptive function
 from pyevolve.Mutators import G1DListMutatorRealGaussian
 from pyevolve.Selectors import GRouletteWheel
-
 from colorbar import visual
 from operators import DCGSimpleGA
-
 
 
 def schafferF6(xlist):
@@ -21,21 +17,21 @@ def schafferF6(xlist):
     score = 0.5 + (t1 * t1 - 0.5) / (t2 * t2)
     return score
 
-if __name__ == "__main__":
-    # Genome instance
+
+def runAlghoritm(AlghoritmClass, pointsColour):
     genome = G1DList.G1DList(2)
-    genome.setParams(rangemin=-100, rangemax=100, bestrawscore=0.00, roundDecimal=2)
+    genome.setParams(rangemin=-100, rangemax=100, bestrawscore=0.00, roundDecimal=4)
     genome.initializator.set(Initializators.G1DListInitializatorReal)
     genome.mutator.set(G1DListMutatorRealGaussian)
     # The evaluator function (objective function)
     genome.evaluator.set(schafferF6)
 
     # Genetic Algorithm Instance
-    ga = DCGSimpleGA(genome)
+    ga = AlghoritmClass(genome)
     ga.selector.set(GRouletteWheel)
 
     ga.minimax = Consts.minimaxType["minimize"]
-    ga.setGenerations(1500)
+    ga.setGenerations(100)
     ga.setMutationRate(0.05)
     ga.terminationCriteria.set(GSimpleGA.RawScoreCriteria)
 
@@ -54,4 +50,20 @@ if __name__ == "__main__":
     #     }),
     #     sorted(ga.getPopulation(), key=lambda el: el.score)
     # ))
-    visual(schafferF6, ga.getPopulation())
+    return ga.getPopulation()
+
+
+if __name__ == "__main__":
+    # Genome instance
+    populationDC = runAlghoritm(DCGSimpleGA, "ro")
+    standardPopulation = runAlghoritm(GSimpleGA.GSimpleGA, "rb")
+
+    visual(schafferF6, [{
+        'individuals': populationDC,
+        'style': 'or',
+        'name': "DC"
+    }, {
+        'individuals': standardPopulation,
+        'style': 'ob',
+        'name': "standard"
+    }])
