@@ -1,8 +1,29 @@
+import itertools
+from math import sqrt
+
 from pyevolve.GSimpleGA import *
 
 class DCGSimpleGA(GSimpleGA):
     def __init__(self, *args, **kwargs):
         GSimpleGA.__init__(self, *args, **kwargs)
+
+    def similarity(self, left, right):
+        return sqrt( (left[0]-right[0]) ** 2 + (left[1]-right[1]) ** 2)
+
+    def bestSimilarity(self, childerns, parents):
+        minSimi = float("inf")
+        bestPerm = parents
+        for permutation in itertools.permutations(parents):
+            simi = 0
+            for (child, parent) in zip(childerns, permutation):
+                simi += self.similarity(child, parent)
+            if minSimi > simi:
+                minSimi = simi
+                bestPerm = permutation
+        return zip(childerns, bestPerm)
+
+
+
 
     def step(self):
         """ Just do one step in evolution, one generation """
@@ -37,8 +58,13 @@ class DCGSimpleGA(GSimpleGA):
             sister.mutate(pmut=self.pMutation, ga_engine=self)
             brother.mutate(pmut=self.pMutation, ga_engine=self)
 
-            newPop.internalPop.append(sister)
-            newPop.internalPop.append(brother)
+            pairs = self.bestSimilarity([sister, brother], [genomeMom, genomeDad])
+
+            for pair in pairs:
+                if self.getMinimax() == Consts.minimaxType["maximize"]:
+                    newPop.internalPop.append(max(pair, key=lambda individual: individual.score))
+                elif self.getMinimax() == Consts.minimaxType["minimize"]:
+                    newPop.internalPop.append(min(pair, key=lambda individual: individual.score))
 
         if len(self.internalPop) % 2 != 0:
             genomeMom = self.select(popID=self.currentGeneration)
@@ -59,17 +85,6 @@ class DCGSimpleGA(GSimpleGA):
 
         # Niching methods- Petrowski's clearing
         self.clear()
-
-        if self.elitism:
-            logging.debug("Doing elitism.")
-            if self.getMinimax() == Consts.minimaxType["maximize"]:
-                for i in xrange(self.nElitismReplacement):
-                    if self.internalPop.bestRaw(i).score > newPop.bestRaw(i).score:
-                        newPop[len(newPop) - 1 - i] = self.internalPop.bestRaw(i)
-            elif self.getMinimax() == Consts.minimaxType["minimize"]:
-                for i in xrange(self.nElitismReplacement):
-                    if self.internalPop.bestRaw(i).score < newPop.bestRaw(i).score:
-                        newPop[len(newPop) - 1 - i] = self.internalPop.bestRaw(i)
 
         self.internalPop = newPop
         self.internalPop.sort()

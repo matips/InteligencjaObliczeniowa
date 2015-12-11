@@ -20,9 +20,9 @@ def visual(function, populations, xmin=None, xmax=None, ymin=None, ymax=None, dx
     if ymax is None:
         ymax = max([individual.genomeList[1] for population in populations for individual in population['individuals']]) + border
     if dx is None:
-        dx = (xmax - xmin) / 200
+        dx = (xmax - xmin) / 400
     if dy is None:
-        dy = (xmax - xmin) / 200
+        dy = (xmax - xmin) / 400
     # generate 2 2d grids for the x & y bounds
     y, x = np.mgrid[slice(ymin, ymax + dy, dy),
                     slice(xmin, xmax + dx, dx)]
