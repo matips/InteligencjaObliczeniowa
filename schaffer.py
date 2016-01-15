@@ -66,7 +66,7 @@ def runAlghoritm(AlghoritmClass, name="", function=schafferF6, steps=100):
 if __name__ == "__main__":
     # Genome instance
     function = rastrigin
-    steps = 1000
+    steps = 20
     populationDC = runAlghoritm(DCGSimpleGA, "DC", function=function, steps=steps)
     standardPopulation = runAlghoritm(GSimpleGA.GSimpleGA, "standard")
 
