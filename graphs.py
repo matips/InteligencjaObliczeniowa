@@ -10,7 +10,7 @@ import numpy as np
 # make these smaller to increase the resolution
 
 
-def visual(function, populations, xmin=None, xmax=None, ymin=None, ymax=None, dx=None, dy=None, border=0.5):
+def visual(function, populations, xmin=None, xmax=None, ymin=None, ymax=None, dx=None, dy=None, border=0.5, steps=100):
     if xmin is None:
         xmin = min([individual.genomeList[0] for population in populations for individual in population['individuals']]) - border
     if xmax is None:
@@ -39,7 +39,7 @@ def visual(function, populations, xmin=None, xmax=None, ymin=None, ymax=None, dx
         created_plot, = plt.plot([individual.genomeList[0] for individual in population['individuals']], [individual[1] for individual in population['individuals']], population['style'], label=population['name'])
         plots.append(created_plot)
     plt.legend(handles=plots)
-    plt.title('schafferF6')
+    plt.title(function.__name__ + " generations: " + str(steps))
     # set the limits of the plot to the limits of the data
     plt.axis([x.min(), x.max(), y.min(), y.max()])
     plt.colorbar()

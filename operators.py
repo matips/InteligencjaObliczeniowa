@@ -2,6 +2,32 @@ import itertools
 from math import sqrt
 
 from pyevolve.GSimpleGA import *
+r = random.Random()
+def G1DListCrossoverBetweenPoint(genome, **args):
+    """ The crossover of G1DList, Children are located between parents
+    """
+    sister = None
+    brother = None
+    gMom = args["mom"]
+    gDad = args["dad"]
+
+    if len(gMom) == 1:
+        Util.raiseException("The 1D List have one element, can't use the Single Point Crossover method !", TypeError)
+
+    if args["count"] >= 1:
+        sister = gMom.clone()
+        for i in xrange(len(gMom)):
+            sister[i] = r.uniform(gMom[i], gDad[i])
+        sister.resetStats()
+
+    if args["count"] == 2:
+        brother = gDad.clone()
+        for i in xrange(len(gMom)):
+            brother[i] = r.uniform(gMom[i], gDad[i])
+        brother.resetStats()
+
+    return (sister, brother)
+
 
 class DCGSimpleGA(GSimpleGA):
     def __init__(self, *args, **kwargs):
