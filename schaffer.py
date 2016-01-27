@@ -2,6 +2,7 @@
 from math import pi
 
 import numpy as np
+import sys
 from pyevolve import G1DList, GSimpleGA
 from pyevolve import Initializators, Consts
 # import matplotlib.pyplot as plt
@@ -65,8 +66,10 @@ def runAlghoritm(AlghoritmClass, name="", function=schafferF6, steps=100):
 
 if __name__ == "__main__":
     # Genome instance
-    function = rastrigin
-    steps = 20
+    funtion_name = sys.argv[1]
+
+    function = {'rastrigin': rastrigin, 'schafferF6': schafferF6}.get(sys.argv[1])
+    steps = int(sys.argv[2])
     populationDC = runAlghoritm(DCGSimpleGA, "DC", function=function, steps=steps)
     standardPopulation = runAlghoritm(GSimpleGA.GSimpleGA, "standard")
 
